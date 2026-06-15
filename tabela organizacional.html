@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tabela Organizacional – Pareceres Referenciais · PGM</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#fff;--bg2:#f6f5f2;--bg3:#edecea;
+  --text:#1a1a18;--text2:#5f5e5a;--text3:#9a9994;
+  --border:rgba(0,0,0,0.10);--border2:rgba(0,0,0,0.18);
+  --blue:#185FA5;--blue2:#378ADD;--blue3:#E6F1FB;--blue4:#042C53;
+  --green:#3B6D11;--green2:#EAF3DE;
+  --amber:#854F0B;--amber2:#FAEEDA;
+  --red:#993C1D;--red2:#FAECE7;
+  --purple:#534AB7;--purple2:#EEEDFE;
+  --teal:#0F6E56;--teal2:#E1F5EE;
+  --gray2:#D3D1C7;
+  --r:8px;--rl:12px;
+}
+@media(prefers-color-scheme:dark){
+  :root{
+    --bg:#1e1e1c;--bg2:#282825;--bg3:#323230;
+    --text:#f0efe9;--text2:#9a9994;--text3:#6b6b67;
+    --border:rgba(255,255,255,0.08);--border2:rgba(255,255,255,0.16);
+    --blue:#85B7EB;--blue2:#378ADD;--blue3:#042C53;--blue4:#B5D4F4;
+    --green:#97C459;--green2:#173404;
+    --amber:#FAC775;--amber2:#633806;
+    --red:#F0997B;--red2:#4A1B0C;
+    --purple:#AFA9EC;--purple2:#26215C;
+    --teal:#5DCAA5;--teal2:#04342C;
+    --gray2:#444441;
+  }
+}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;font-size:13px;color:var(--text);background:var(--bg3);min-height:100vh;padding:1.5rem 1rem}
+.container{max-width:1300px;margin:0 auto}
+
+/* HEADER */
+.header{display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:1.5rem}
+.header-left h1{font-size:17px;font-weight:500;margin-bottom:2px}
+.header-left p{font-size:12px;color:var(--text2)}
+.responsible-chips{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap}
+.rchip{display:inline-flex;align-items:center;gap:6px;background:var(--purple2);color:var(--purple);font-size:12px;font-weight:500;padding:4px 12px;border-radius:100px}
+.rchip i{font-size:14px}
+.date-badge{font-size:11px;background:var(--bg2);border:0.5px solid var(--border);border-radius:100px;padding:3px 10px;color:var(--text2)}
+
+/* REMINDER BANNER */
+.reminder-banner{background:var(--amber2);border:0.5px solid var(--amber);border-radius:var(--rl);padding:12px 16px;margin-bottom:1rem;display:none}
+.reminder-banner h3{font-size:13px;font-weight:500;color:var(--amber);margin-bottom:6px}
+.reminder-banner ul{list-style:none;display:flex;flex-direction:column;gap:4px}
+.reminder-banner li{font-size:12px;color:var(--amber)}
+
+/* CARDS */
+.section-label{font-size:11px;font-weight:500;color:var(--text2);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px}
+.stats-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:1rem}
+.stat-box{background:var(--bg);border:0.5px solid var(--border);border-radius:var(--r);padding:10px 16px;flex:1;min-width:100px}
+.stat-box .sv{font-size:20px;font-weight:500}
+.stat-box .sl{font-size:11px;color:var(--text2)}
+
+/* TEAM CARDS */
+.teams-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:1rem}
+@media(max-width:640px){.teams-grid{grid-template-columns:1fr}}
+.team-card{background:var(--bg);border:0.5px solid var(--border);border-radius:var(--rl);padding:1rem}
+.team-card h3{font-size:13px;font-weight:500;margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.team-tag{font-size:10px;padding:2px 8px;border-radius:100px;font-weight:500}
+.tag-najs{background:var(--blue3);color:var(--blue)}
+.tag-cons{background:var(--purple2);color:var(--purple)}
+.person-rows{display:flex;flex-direction:column;gap:4px}
+.person-row{display:flex;align-items:center;justify-content:space-between;padding:5px 8px;border-radius:var(--r);cursor:pointer;transition:background .1s}
+.person-row:hover{background:var(--bg2)}
+.person-row.active{background:var(--blue3)}
+.person-row .pname{font-size:13px;font-weight:500}
+.person-row .pbadge{font-size:12px;font-weight:500;color:var(--blue);background:var(--blue3);padding:2px 10px;border-radius:100px;min-width:28px;text-align:center}
+.person-row.active .pbadge{background:var(--blue2);color:#fff}
+.person-row .pzero{color:var(--text3);background:var(--bg2)}
+
+/* TOPBAR */
+.topbar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:1rem;align-items:center}
+.topbar input[type=text]{height:34px;padding:0 10px;border:0.5px solid var(--border2);border-radius:var(--r);background:var(--bg);color:var(--text);font-size:13px;outline:none;flex:1;min-width:160px}
+.topbar input:focus{border-color:var(--blue2)}
+.topbar select{height:34px;padding:0 8px;border:0.5px solid var(--border2);border-radius:var(--r);background:var(--bg);color:var(--text);font-size:12px;outline:none}
+.btn{height:34px;padding:0 12px;border-radius:var(--r);cursor:pointer;font-size:12px;display:inline-flex;align-items:center;gap:5px;transition:opacity .12s}
+.btn-ghost{background:transparent;border:0.5px solid var(--border2);color:var(--text)}
+.btn-ghost:hover{background:var(--bg2)}
+.btn-primary{background:var(--blue);border:none;color:#fff}
+.btn-primary:hover{opacity:.85}
+.btn-danger{background:transparent;border:0.5px solid var(--red2);color:var(--red)}
+.btn-danger:hover{background:var(--red2)}
+.filter-reset{font-size:12px;color:var(--blue2);cursor:pointer;background:none;border:none;padding:0 4px}
+
+/* TABLE */
+.table-wrap{overflow-x:auto;border:0.5px solid var(--border);border-radius:var(--rl);background:var(--bg)}
+table{width:100%;border-collapse:collapse;min-width:900px}
+th{background:var(--bg2);font-size:11px;font-weight:500;color:var(--text2);padding:8px 10px;text-align:left;border-bottom:0.5px solid var(--border);white-space:nowrap;user-select:none;cursor:pointer}
+th:hover{background:var(--bg3)}
+th .sort-icon{font-size:10px;margin-left:3px;opacity:.5}
+th.sorted .sort-icon{opacity:1;color:var(--blue2)}
+td{padding:8px 10px;font-size:12px;border-bottom:0.5px solid var(--border);vertical-align:top}
+tr:last-child td{border-bottom:none}
+tr.hl td{background:var(--blue3)}
+tr.dim td{opacity:.25}
+tr.add-row td{background:var(--bg2)}
+.num-col{color:var(--text3);font-size:11px;width:36px;text-align:center}
+.drag-col{width:24px;text-align:center;color:var(--text3);cursor:grab}
+
+/* Chips / badges */
+.chip{display:inline-block;font-size:11px;padding:2px 7px;border-radius:100px;margin:2px 2px 2px 0;font-weight:500}
+.chip-najs{background:var(--blue3);color:var(--blue)}
+.chip-cons{background:var(--purple2);color:var(--purple)}
+.chip-rat{background:var(--teal2);color:var(--teal)}
+.chip-hl{background:var(--blue2);color:#fff}
+.badge{display:inline-block;font-size:11px;padding:2px 8px;border-radius:100px;font-weight:500;white-space:nowrap}
+.s-blank{background:var(--bg2);color:var(--text2)}
+.s-iniciar{background:var(--amber2);color:var(--amber)}
+.s-aguardando{background:var(--blue3);color:var(--blue)}
+.s-verificar{background:var(--red2);color:var(--red)}
+.s-encaminhado{background:var(--green2);color:var(--green)}
+.s-andamento{background:var(--blue3);color:var(--blue2)}
+.s-concluido{background:var(--teal2);color:var(--teal)}
+.prov-cell{font-size:11px;color:var(--text2);max-width:180px}
+.prov-reminder{color:var(--amber);font-weight:500}
+
+/* inline edit */
+.ie{width:100%;font-size:12px;padding:3px 6px;background:var(--bg);border:0.5px solid var(--blue2);border-radius:5px;color:var(--text);outline:none}
+select.ie{font-size:12px}
+textarea.ie{resize:vertical;min-height:40px}
+
+/* action icons */
+.action-btn{background:none;border:none;cursor:pointer;color:var(--text2);padding:2px 3px;font-size:14px}
+.action-btn:hover{color:var(--blue2)}
+.action-btn.del:hover{color:var(--red)}
+
+/* drag */
+.dragging{opacity:.4}
+.drag-over td{border-top:2px solid var(--blue2)!important}
+
+/* modal */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);display:flex;align-items:center;justify-content:center;z-index:100;display:none}
+.modal{background:var(--bg);border-radius:var(--rl);padding:1.5rem;width:480px;max-width:95vw;max-height:90vh;overflow-y:auto;border:0.5px solid var(--border2)}
+.modal h2{font-size:15px;font-weight:500;margin-bottom:1rem}
+.form-row{display:flex;flex-direction:column;gap:4px;margin-bottom:12px}
+.form-row label{font-size:11px;font-weight:500;color:var(--text2);text-transform:uppercase;letter-spacing:.04em}
+.form-row input,.form-row select,.form-row textarea{font-size:13px;padding:6px 10px;border:0.5px solid var(--border2);border-radius:var(--r);background:var(--bg);color:var(--text);outline:none}
+.form-row input:focus,.form-row select:focus,.form-row textarea:focus{border-color:var(--blue2)}
+.form-row textarea{resize:vertical;min-height:56px}
+.modal-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:1rem}
+
+/* person mgmt */
+.person-list-edit{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+.person-tag-edit{display:inline-flex;align-items:center;gap:4px;font-size:12px;padding:3px 10px;border-radius:100px;background:var(--bg2);border:0.5px solid var(--border2)}
+.person-tag-edit button{background:none;border:none;cursor:pointer;color:var(--text3);font-size:12px;padding:0}
+.person-tag-edit button:hover{color:var(--red)}
+
+/* footer */
+.footer{text-align:center;font-size:11px;color:var(--text3);margin-top:1.5rem}
+</style>
+</head>
+<body>
+<div class="container">
+
+<!-- HEADER -->
+<div class="header">
+  <div class="header-left">
+    <h1>Tabela Organizacional – Pareceres Referenciais</h1>
+    <p>Procuradoria-Geral do Município de Curitiba · PGCJ / NAJS</p>
+    <div class="responsible-chips">
+      <span class="rchip"><i class="ti ti-star" aria-hidden="true"></i>Mariana</span>
+      <span class="rchip"><i class="ti ti-star" aria-hidden="true"></i>Ana</span>
+      <span style="font-size:11px;color:var(--text2);align-self:center">responsáveis pelo projeto · todos os pareceres ratificados por Mariana</span>
+    </div>
+  </div>
+  <span class="date-badge" id="dateBadge"></span>
+</div>
+
+<!-- REMINDER BANNER -->
+<div class="reminder-banner" id="reminderBanner">
+  <h3><i class="ti ti-bell" aria-hidden="true"></i> Lembretes de hoje</h3>
+  <ul id="reminderList"></ul>
+</div>
+
+<!-- STATS -->
+<div class="stats-row" id="statsRow"></div>
+
+<!-- TEAMS -->
+<div class="teams-grid">
+  <div class="team-card">
+    <h3><span class="team-tag tag-najs">NAJS</span> Procuradores</h3>
+    <div class="person-rows" id="najsRows"></div>
+  </div>
+  <div class="team-card">
+    <h3><span class="team-tag tag-cons">CONSULTORIA</span> Procuradores</h3>
+    <div class="person-rows" id="consRows"></div>
+  </div>
+</div>
+
+<!-- TABLE CONTROLS -->
+<div class="topbar">
+  <input type="text" id="search" placeholder="Buscar referencial, procurador…" oninput="render()">
+  <select id="fStatus" onchange="render()">
+    <option value="">Todos os status</option>
+    <option>INICIAR</option>
+    <option>ENCAMINHADO</option>
+    <option>AGUARDANDO RETORNO</option>
+    <option>VERIFICAR</option>
+    <option>EM ANDAMENTO</option>
+    <option>CONCLUÍDO</option>
+  </select>
+  <button class="btn btn-ghost" id="resetBtn" onclick="resetFilter()" style="display:none"><i class="ti ti-x"></i> Limpar filtro</button>
+  <button class="btn btn-ghost" onclick="exportCSV()"><i class="ti ti-download"></i> CSV</button>
+  <button class="btn btn-primary" onclick="openModal()"><i class="ti ti-plus"></i> Novo parecer</button>
+</div>
+
+<div class="section-label" style="margin-bottom:8px">
+  Pareceres referenciais
+  <span id="countLabel" style="color:var(--text3);font-weight:400"></span>
+</div>
+<div class="table-wrap">
+<table id="mainTable">
+<thead>
+<tr>
+  <th style="width:24px;cursor:default"></th>
+  <th data-col="ordem" class="sorted">Prioridade <span class="sort-icon ti ti-arrows-sort"></span></th>
+  <th data-col="ref">Referencial <span class="sort-icon ti ti-arrows-sort"></span></th>
+  <th data-col="najs">NAJS <span class="sort-icon ti ti-arrows-sort"></span></th>
+  <th data-col="cons">Consultoria <span class="sort-icon ti ti-arrows-sort"></span></th>
+  <th data-col="status">Status <span class="sort-icon ti ti-arrows-sort"></span></th>
+  <th data-col="prov">Providências</th>
+  <th data-col="protocolo">Protocolo</th>
+  <th style="width:52px;cursor:default"></th>
+</tr>
+</thead>
+<tbody id="tbody"></tbody>
+</table>
+</div>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modalOverlay" onclick="closeModalOutside(event)">
+<div class="modal" id="modal">
+  <h2 id="modalTitle">Novo Parecer</h2>
+  <div class="form-row">
+    <label>Prioridade</label>
+    <input type="number" id="f-ordem" min="0" placeholder="ex: 01">
+  </div>
+  <div class="form-row">
+    <label>Referencial</label>
+    <textarea id="f-ref" rows="2" placeholder="Descrição do parecer…"></textarea>
+  </div>
+  <div class="form-row">
+    <label>Procuradores NAJS</label>
+    <div style="display:flex;gap:6px">
+      <select id="f-najs-sel" style="flex:1;font-size:12px;padding:5px 8px;border:0.5px solid var(--border2);border-radius:var(--r);background:var(--bg);color:var(--text);outline:none">
+        <option value="">— adicionar —</option>
+      </select>
+      <button class="btn btn-ghost" onclick="addPersonToField('najs')" style="height:32px"><i class="ti ti-plus"></i></button>
+    </div>
+    <div class="person-list-edit" id="f-najs-list"></div>
+  </div>
+  <div class="form-row">
+    <label>Procuradores Consultoria</label>
+    <div style="display:flex;gap:6px">
+      <select id="f-cons-sel" style="flex:1;font-size:12px;padding:5px 8px;border:0.5px solid var(--border2);border-radius:var(--r);background:var(--bg);color:var(--text);outline:none">
+        <option value="">— adicionar —</option>
+      </select>
+      <button class="btn btn-ghost" onclick="addPersonToField('cons')" style="height:32px"><i class="ti ti-plus"></i></button>
+    </div>
+    <div class="person-list-edit" id="f-cons-list"></div>
+  </div>
+  <div class="form-row">
+    <label>Status</label>
+    <select id="f-status">
+      <option value="">—</option>
+      <option>INICIAR</option>
+      <option>ENCAMINHADO</option>
+      <option>AGUARDANDO RETORNO</option>
+      <option>VERIFICAR</option>
+      <option>EM ANDAMENTO</option>
+      <option>CONCLUÍDO</option>
+    </select>
+  </div>
+  <div class="form-row">
+    <label>Providências</label>
+    <textarea id="f-prov" rows="2" placeholder="Observações, acionamentos…"></textarea>
+  </div>
+  <div class="form-row">
+    <label>Data de lembrete (Mariana e Ana serão notificadas)</label>
+    <input type="date" id="f-reminder">
+  </div>
+  <div class="form-row">
+    <label>Protocolo</label>
+    <input type="text" id="f-protocolo" placeholder="Nº do protocolo">
+  </div>
+  <div class="modal-actions">
+    <button class="btn btn-ghost" onclick="closeModal()">Cancelar</button>
+    <button class="btn btn-primary" onclick="saveModal()">Salvar</button>
+  </div>
+</div>
+</div>
+
+<div class="footer">Dados salvos localmente no navegador · Atualizado automaticamente</div>
+</div>
+
+<script>
+const KEY = 'pgm_org_v2';
+
+const NAJS_LIST = ["Adriana","Ana Edwiges","Antonio","Barbara","Bruno","Chris Dalvi","Chris Guimarães","Cícero","Clarissa","Cristine","Diego","Divanir","Felipe","Heliomar","Katiuscia","Luis Miguel","Mariana","Monika","Natália","Paulo de Tarso","Raquel","Ricardo","Richard","Thayse","Vicente","Vivi"];
+const CONS_LIST = ["Marilena","Mauro","Valéria","Vera"];
+const RESP = ["Mariana","Ana Edwiges"];
+const RATIFICADORA = "Mariana";
+
+const DEFAULT_DATA = [
+  {id:1,  ordem:1,  ref:"Lei 13.019/2016: Termo de fomento, dispensa de chamamento, emendas parlamentares, Fundos. FAS SMDH SMDEI", najs:["Barbara","Felipe","Ana Edwiges"], cons:[], status:"ENCAMINHADO", prov:"", protocolo:"", reminder:""},
+  {id:2,  ordem:1,  ref:"Lei 13.019/2016: Termo de fomento, dispensa de chamamento, emendas parlamentares, SMDH", najs:[], cons:[], status:"", prov:"", protocolo:"", reminder:""},
+  {id:3,  ordem:2,  ref:"Locação. Inexigibilidade.", najs:["Raquel","Adriana"], cons:[], status:"INICIAR", prov:"", protocolo:"", reminder:""},
+  {id:4,  ordem:3,  ref:"Prorrogação de ata de registro de preços.", najs:["Ricardo","Clarissa"], cons:[], status:"INICIAR", prov:"", protocolo:"", reminder:""},
+  {id:5,  ordem:4,  ref:"Acréscimo quantitativo de vagas de CMEIs", najs:["Ricardo","Chris Dalvi"], cons:[], status:"", prov:"", protocolo:"", reminder:""},
+  {id:6,  ordem:4,  ref:"Doação de bens", najs:["Natália","Cícero"], cons:[], status:"", prov:"", protocolo:"", reminder:""},
+  {id:7,  ordem:5,  ref:"Certeza e liquidez de crédito não tributário: multas SMMA", najs:["Natália","Chris Guimarães"], cons:[], status:"", prov:"", protocolo:"", reminder:""},
+  {id:8,  ordem:6,  ref:"Certeza e liquidez de crédito não tributário: multas (SMDT)", najs:[], cons:[], status:"VERIFICAR", prov:"Verificar com Cristine", protocolo:"", reminder:""},
+  {id:9,  ordem:7,  ref:"Certeza e liquidez de crédito não tributário: multas COSEDI (SGM)", najs:[], cons:[], status:"VERIFICAR", prov:"Verificar com Chris Dalvi", protocolo:"", reminder:""},
+  {id:10, ordem:8,  ref:"Celebração de contratos decorrentes do novo edital de credenciamento do IMAP", najs:[], cons:[], status:"", prov:"", protocolo:"", reminder:""},
+  {id:11, ordem:9,  ref:"Adesão a ata de registro de preços – interna", najs:["Cristine","Adriana"], cons:[], status:"", prov:"", protocolo:"", reminder:""},
+  {id:12, ordem:10, ref:"Adesão a ata de registro de preços – externa (Município aderente)", najs:["Cristine","Adriana"], cons:[], status:"", prov:"", protocolo:"", reminder:""},
+  {id:13, ordem:11, ref:"Adesão a ata de registro de preços – externa (Município gerenciador)", najs:["Cristine","Adriana"], cons:[], status:"", prov:"", protocolo:"", reminder:""},
+  {id:14, ordem:12, ref:"Apoio", najs:["Cícero","Maíra"], cons:[], status:"", prov:"", protocolo:"", reminder:""},
+  {id:15, ordem:13, ref:"Supressão quantitativa de final de obra – término de vigência", najs:["Katiuscia","Luis Miguel"], cons:[], status:"AGUARDANDO RETORNO", prov:"Aguardando retorno – NAJSMOP", protocolo:"", reminder:"2026-06-17"},
+  {id:16, ordem:14, ref:"Lei 13.019/2016: Termo de fomento, dispensa de chamamento, emendas parlamentares, limitada à FAS", najs:["Barbara"], cons:["Valéria"], status:"AGUARDANDO RETORNO", prov:"Aguardando retorno – Barbara", protocolo:"", reminder:"2026-06-17"},
+  {id:17, ordem:15, ref:"Revogação de decreto de permissão de uso de banca de feiras. SMSAN", najs:["Antonio","Vicente"], cons:[], status:"AGUARDANDO RETORNO", prov:"Aguardando retorno – NAJSMSAN", protocolo:"", reminder:"2026-06-17"},
+  {id:18, ordem:16, ref:"Alteração de titularidade em permissão de uso de banca de feira, por força normativa. SMSAN", najs:["Antonio","Vicente"], cons:[], status:"AGUARDANDO RETORNO", prov:"Aguardando retorno – NAJSMSAN", protocolo:"", reminder:"2026-06-17"},
+  {id:19, ordem:null,ref:"Prorrogação de contrato por demanda – verificar se delimita incidência (art. 100 do Decreto 700 / SIM AM)", najs:[], cons:[], status:"VERIFICAR", prov:"Pedir para Chris Dalvi; verificar processo anterior", protocolo:"", reminder:"2026-06-15"},
+  {id:20, ordem:null,ref:"Acréscimo/supressão quantitativo de obras", najs:["Katiuscia","Luis Miguel"], cons:[], status:"AGUARDANDO RETORNO", prov:"Aguardando retorno – NAJSMOP", protocolo:"", reminder:"2026-06-17"},
+  {id:21, ordem:null,ref:"Dispensa SMS cumprimento de decisão judicial", najs:["Bruno","Monika"], cons:[], status:"VERIFICAR", prov:"Ver com Bruno se precisa", protocolo:"", reminder:"2026-06-17"},
+  {id:22, ordem:null,ref:"Celebração de contratos decorrentes do novo edital de credenciamento do IMAP (Divanir)", najs:["Divanir"], cons:[], status:"EM ANDAMENTO", prov:"Edital ainda em andamento – médio prazo", protocolo:"", reminder:""},
+  {id:23, ordem:null,ref:"Prorrogação de prazo de vigência e de execução de obra", najs:["Katiuscia","Luis Miguel"], cons:[], status:"AGUARDANDO RETORNO", prov:"Aguardando retorno – NAJSMOP", protocolo:"", reminder:"2026-06-17"},
+];
+
+function load(){try{const s=localStorage.getItem(KEY);return s?JSON.parse(s):JSON.parse(JSON.stringify(DEFAULT_DATA))}catch(e){return JSON.parse(JSON.stringify(DEFAULT_DATA))}}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(data))}catch(e){}}
+
+let data=load();
+let nextId=Math.max(...data.map(r=>r.id),0)+1;
+let filterPerson=null;
+let sortCol='ordem';
+let sortAsc=true;
+let editId=null;
+let modalEditId=null;
+let modalNajs=[];
+let modalCons=[];
+let dragSrcId=null;
+
+document.getElementById('dateBadge').textContent='Atualizado em '+new Date().toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit',year:'numeric'});
+
+// populate selects
+function populateSelects(){
+  ['f-najs-sel','f-cons-sel'].forEach(id=>{ const el=document.getElementById(id); el.innerHTML='<option value="">— adicionar —</option>'; });
+  NAJS_LIST.forEach(p=>{ const o=document.createElement('option'); o.value=p; o.textContent=p; document.getElementById('f-najs-sel').appendChild(o); });
+  CONS_LIST.forEach(p=>{ const o=document.createElement('option'); o.value=p; o.textContent=p; document.getElementById('f-cons-sel').appendChild(o); });
+}
+populateSelects();
+
+// Reminders
+function checkReminders(){
+  const today=new Date().toISOString().slice(0,10);
+  const items=data.filter(r=>r.reminder&&r.reminder<=today&&r.status!=='CONCLUÍDO');
+  const banner=document.getElementById('reminderBanner');
+  const list=document.getElementById('reminderList');
+  if(!items.length){banner.style.display='none';return;}
+  banner.style.display='block';
+  list.innerHTML=items.map(r=>`<li><i class="ti ti-arrow-right" style="font-size:11px"></i> [${r.reminder}] ${esc(r.ref.substring(0,80))}${r.ref.length>80?'…':''} — ${esc(r.prov||'verificar')}</li>`).join('');
+}
+
+// Count per person
+function countPerson(name){
+  return data.filter(r=>[...r.najs,...r.cons].includes(name)).length;
+}
+
+function renderTeams(){
+  function makeRows(list,elId,tagClass){
+    const el=document.getElementById(elId);
+    el.innerHTML='';
+    list.forEach(p=>{
+      const c=countPerson(p);
+      const d=document.createElement('div');
+      d.className='person-row'+(filterPerson===p?' active':'');
+      d.innerHTML=`<span class="pname">${esc(p)}</span><span class="pbadge ${c===0?'pzero':''}">${c}</span>`;
+      d.title=`${c} parecer${c!==1?'es':''}`;
+      d.onclick=()=>{filterPerson=filterPerson===p?null:p;document.getElementById('resetBtn').style.display=filterPerson?'flex':'none';render();};
+      el.appendChild(d);
+    });
+  }
+  makeRows(NAJS_LIST,'najsRows','chip-najs');
+  makeRows(CONS_LIST,'consRows','chip-cons');
+}
+
+function badgeClass(s){
+  if(!s)return 's-blank';
+  const u=s.toUpperCase();
+  if(u.includes('INICIAR'))return 's-iniciar';
+  if(u.includes('AGUARDANDO'))return 's-aguardando';
+  if(u.includes('VERIFICAR'))return 's-verificar';
+  if(u.includes('ENCAMINHADO'))return 's-encaminhado';
+  if(u.includes('ANDAMENTO'))return 's-andamento';
+  if(u.includes('CONCLU'))return 's-concluido';
+  return 's-blank';
+}
+
+function matchRow(row,q,fs){
+  const text=(row.ref+' '+[...row.najs,...row.cons].join(' ')+' '+(row.status||'')+' '+(row.prov||'')).toLowerCase();
+  return(!q||text.includes(q.toLowerCase()))&&(!fs||(row.status||'').toUpperCase().includes(fs.toUpperCase()));
+}
+
+function sortedData(rows){
+  return [...rows].sort((a,b)=>{
+    let av=a[sortCol],bv=b[sortCol];
+    if(sortCol==='ordem'){av=av??9999;bv=bv??9999;}
+    if(av===null||av===undefined)av='';
+    if(bv===null||bv===undefined)bv='';
+    if(typeof av==='number'&&typeof bv==='number')return sortAsc?av-bv:bv-av;
+    return sortAsc?String(av).localeCompare(String(bv),'pt'):String(bv).localeCompare(String(av),'pt');
+  });
+}
+
+function render(){
+  const q=document.getElementById('search').value;
+  const fs=document.getElementById('fStatus').value;
+
+  renderTeams();
+  checkReminders();
+
+  // stats
+  const total=data.length;
+  const comDesig=data.filter(r=>r.najs.length+r.cons.length>0).length;
+  const semDesig=data.filter(r=>r.najs.length+r.cons.length===0).length;
+  const concl=data.filter(r=>(r.status||'').toUpperCase().includes('CONCLU')).length;
+  document.getElementById('statsRow').innerHTML=
+    `<div class="stat-box"><div class="sv">${total}</div><div class="sl">pareceres</div></div>`+
+    `<div class="stat-box"><div class="sv">${comDesig}</div><div class="sl">com designação</div></div>`+
+    `<div class="stat-box"><div class="sv">${semDesig}</div><div class="sl">sem designação</div></div>`+
+    `<div class="stat-box"><div class="sv">${concl}</div><div class="sl">concluídos</div></div>`;
+
+  const visible=data.filter(r=>matchRow(r,q,fs));
+  document.getElementById('countLabel').textContent=`— ${visible.length} de ${total}`;
+
+  const tbody=document.getElementById('tbody');
+  tbody.innerHTML='';
+  let seq=0;
+
+  sortedData(visible).forEach(row=>{
+    const personMatch=!filterPerson||[...row.najs,...row.cons].includes(filterPerson);
+    if(personMatch)seq++;
+
+    if(editId===row.id){renderEditRow(tbody,row,personMatch?seq:'');return;}
+
+    const tr=document.createElement('tr');
+    tr.className=personMatch?'hl':'dim';
+    tr.draggable=true;
+    tr.dataset.id=row.id;
+
+    const reminderFlag=row.reminder?`<span title="Lembrete: ${row.reminder}" style="color:var(--amber);font-size:11px"><i class="ti ti-bell"></i></span>`:'';
+    const najsChips=row.najs.map(p=>`<span class="chip chip-najs${filterPerson===p?' chip-hl':''}">${esc(p)}</span>`).join('');
+    const consChips=row.cons.map(p=>`<span class="chip chip-cons${filterPerson===p?' chip-hl':''}">${esc(p)}</span>`).join('');
+    const ratChip=`<span class="chip chip-rat" title="Ratificação">${esc(RATIFICADORA)}</span>`;
+
+    tr.innerHTML=`
+      <td class="drag-col"><i class="ti ti-grip-vertical" aria-hidden="true"></i></td>
+      <td class="num-col">${row.ordem??'—'}</td>
+      <td>${esc(row.ref)}</td>
+      <td>${najsChips||'<span style="color:var(--text3)">—</span>'}</td>
+      <td>${consChips||'<span style="color:var(--text3)">—</span>'}<br>${ratChip}</td>
+      <td><span class="badge ${badgeClass(row.status)}">${esc(row.status)||'—'}</span></td>
+      <td class="prov-cell">${row.reminder?`<span class="prov-reminder"><i class="ti ti-bell" style="font-size:10px"></i> ${row.reminder}</span><br>`:''}${esc(row.prov)||''}</td>
+      <td style="font-size:11px;color:var(--text2)">${esc(row.protocolo)||''}</td>
+      <td style="white-space:nowrap">
+        <button class="action-btn" title="Editar" onclick="openModal(${row.id})"><i class="ti ti-edit"></i></button>
+        <button class="action-btn del" title="Remover" onclick="removeRow(${row.id})"><i class="ti ti-trash"></i></button>
+      </td>`;
+
+    // drag events
+    tr.addEventListener('dragstart',e=>{dragSrcId=row.id;tr.classList.add('dragging');e.dataTransfer.effectAllowed='move';});
+    tr.addEventListener('dragend',()=>{tr.classList.remove('dragging');document.querySelectorAll('.drag-over').forEach(el=>el.classList.remove('drag-over'));});
+    tr.addEventListener('dragover',e=>{e.preventDefault();tr.classList.add('drag-over');});
+    tr.addEventListener('dragleave',()=>tr.classList.remove('drag-over'));
+    tr.addEventListener('drop',e=>{e.preventDefault();tr.classList.remove('drag-over');if(dragSrcId&&dragSrcId!==row.id){reorder(dragSrcId,row.id);}});
+
+    tbody.appendChild(tr);
+  });
+}
+
+function renderEditRow(tbody,row,seq){/* editing via modal now */}
+
+function reorder(srcId,tgtId){
+  const si=data.findIndex(r=>r.id===srcId);
+  const ti=data.findIndex(r=>r.id===tgtId);
+  if(si<0||ti<0)return;
+  const [item]=data.splice(si,1);
+  data.splice(ti,0,item);
+  save();render();
+}
+
+// sort
+document.querySelectorAll('th[data-col]').forEach(th=>{
+  th.addEventListener('click',()=>{
+    const col=th.dataset.col;
+    if(sortCol===col)sortAsc=!sortAsc;
+    else{sortCol=col;sortAsc=true;}
+    document.querySelectorAll('th[data-col]').forEach(t=>t.classList.remove('sorted'));
+    th.classList.add('sorted');
+    render();
+  });
+});
+
+// Modal
+function openModal(id){
+  modalEditId=id||null;
+  const row=id?data.find(r=>r.id===id):null;
+  document.getElementById('modalTitle').textContent=id?'Editar Parecer':'Novo Parecer';
+  document.getElementById('f-ordem').value=row?.ordem??'';
+  document.getElementById('f-ref').value=row?.ref??'';
+  document.getElementById('f-status').value=row?.status??'';
+  document.getElementById('f-prov').value=row?.prov??'';
+  document.getElementById('f-reminder').value=row?.reminder??'';
+  document.getElementById('f-protocolo').value=row?.protocolo??'';
+  modalNajs=[...(row?.najs??[])];
+  modalCons=[...(row?.cons??[])];
+  refreshModalPersonLists();
+  document.getElementById('modalOverlay').style.display='flex';
+  setTimeout(()=>document.getElementById('f-ref').focus(),80);
+}
+function closeModal(){document.getElementById('modalOverlay').style.display='none';modalEditId=null;}
+function closeModalOutside(e){if(e.target===document.getElementById('modalOverlay'))closeModal();}
+
+function refreshModalPersonLists(){
+  const nl=document.getElementById('f-najs-list');
+  nl.innerHTML=modalNajs.map(p=>`<span class="person-tag-edit chip-najs">${esc(p)}<button onclick="removePersonFromField('najs','${esc(p)}')" title="Remover">×</button></span>`).join('');
+  const cl=document.getElementById('f-cons-list');
+  cl.innerHTML=modalCons.map(p=>`<span class="person-tag-edit chip-cons">${esc(p)}<button onclick="removePersonFromField('cons','${esc(p)}')" title="Remover">×</button></span>`).join('');
+}
+
+function addPersonToField(team){
+  const sel=document.getElementById(`f-${team}-sel`);
+  const val=sel.value;
+  if(!val)return;
+  const arr=team==='najs'?modalNajs:modalCons;
+  if(!arr.includes(val))arr.push(val);
+  sel.value='';
+  refreshModalPersonLists();
+}
+function removePersonFromField(team,name){
+  if(team==='najs')modalNajs=modalNajs.filter(p=>p!==name);
+  else modalCons=modalCons.filter(p=>p!==name);
+  refreshModalPersonLists();
+}
+
+function saveModal(){
+  const ref=(document.getElementById('f-ref').value||'').trim();
+  if(!ref){document.getElementById('f-ref').focus();return;}
+  const row={
+    id:modalEditId??nextId++,
+    ordem:parseInt(document.getElementById('f-ordem').value)||null,
+    ref,
+    najs:[...modalNajs],
+    cons:[...modalCons],
+    status:document.getElementById('f-status').value,
+    prov:document.getElementById('f-prov').value.trim(),
+    reminder:document.getElementById('f-reminder').value,
+    protocolo:document.getElementById('f-protocolo').value.trim(),
+  };
+  if(modalEditId){const i=data.findIndex(r=>r.id===modalEditId);if(i>=0)data[i]=row;}
+  else data.push(row);
+  save();closeModal();render();
+}
+
+function removeRow(id){
+  if(!confirm('Remover este parecer?'))return;
+  data=data.filter(r=>r.id!==id);
+  save();render();
+}
+
+function resetFilter(){filterPerson=null;document.getElementById('resetBtn').style.display='none';render();}
+
+function esc(s){if(!s)return'';return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+
+function exportCSV(){
+  const h=['Prioridade','Referencial','NAJS','Consultoria','Ratificação','Status','Providências','Lembrete','Protocolo'];
+  const rows=data.map(r=>[
+    r.ordem??'',
+    '"'+r.ref.replace(/"/g,'""')+'"',
+    '"'+r.najs.join(', ')+'\"',
+    '"'+r.cons.join(', ')+'\"',
+    RATIFICADORA,
+    r.status||'',
+    '"'+(r.prov||'').replace(/"/g,'""')+'"',
+    r.reminder||'',
+    r.protocolo||''
+  ]);
+  const csv=[h,...rows].map(r=>r.join(',')).join('\n');
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8'}));
+  a.download='pareceres_referenciais_'+new Date().toISOString().slice(0,10)+'.csv';
+  a.click();
+}
+
+render();
+</script>
+</body>
+</html>
