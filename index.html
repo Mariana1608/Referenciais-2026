@@ -151,7 +151,7 @@
   .td-consultoria { min-width: 120px; color: #6b1a3e; }
   .td-status { min-width: 130px; }
   .td-prov { min-width: 180px; }
-  .td-acoes { min-width: 80px; text-align: center; }
+  .td-acoes { min-width: 100px; text-align: center; }
 
   /* RATIFICAÇÃO */
   .ratif-badge {
@@ -207,6 +207,8 @@
   .btn-edit:hover { border-color: var(--verde); color: var(--verde); }
   .btn-del { color: #c0392b; border-color: #f9c6c6; }
   .btn-del:hover { background: #fdecea; border-color: #c0392b; }
+  .btn-agenda { color: #1a73e8; border-color: #c5d9f7; }
+  .btn-agenda:hover { background: #e8f0fe; border-color: #1a73e8; }
 
   /* PAINEL LATERAL */
   .painel-lateral {
@@ -726,6 +728,7 @@ function render(lista) {
       <td class="td-acoes">
         <button class="btn-edit" onclick="abrirModalEditar('${row.id}')" title="Editar">✏️</button>
         <button class="btn-edit btn-del" onclick="excluir('${row.id}','${esc(row.referencial)}')" title="Excluir">🗑</button>
+        ${row.dataLembrete ? `<button class="btn-edit btn-agenda" onclick="abrirAgenda('${row.id}')" title="Criar lembrete na Agenda Google">📅</button>` : ''}
       </td>
     `;
     corpo.appendChild(tr);
@@ -974,6 +977,30 @@ function toast(msg) {
   el.style.display = 'block';
   setTimeout(() => { el.style.display = 'none'; }, 3500);
 }
+
+// ======================================================
+// GOOGLE AGENDA
+// ======================================================
+window.abrirAgenda = function(id) {
+  const row = dados.find(d => d.id === id);
+  if (!row || !row.dataLembrete) return;
+
+  // Formata a data no padrão do Google Agenda: YYYYMMDD
+  const dataStr = row.dataLembrete.replace(/-/g, '');
+
+  const titulo = encodeURIComponent(`🔔 [PGM] ${row.respLembrete ? row.respLembrete + ': ' : ''}${row.referencial.substring(0, 60)}`);
+  const descricao = encodeURIComponent(
+    `Parecer Referencial: ${row.referencial}\n` +
+    `Responsável pelo acionamento: ${row.respLembrete || 'Mariana e Ana'}\n` +
+    `Status atual: ${row.status || '—'}\n` +
+    (row.providencias ? `Providências: ${row.providencias}\n` : '') +
+    `\nAcesse a tabela: https://mariana1608.github.io/Referenciais-2026/`
+  );
+
+  const url = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${titulo}&dates=${dataStr}/${dataStr}&details=${descricao}`;
+  window.open(url, '_blank');
+  toast('📅 Abrindo Google Agenda...');
+};
 
 // ======================================================
 // INIT
