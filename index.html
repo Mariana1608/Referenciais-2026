@@ -31,7 +31,6 @@
     font-size: 13px;
   }
 
-  /* CABEÇALHO */
   header {
     background: var(--verde);
     color: white;
@@ -47,7 +46,6 @@
   .header-right { text-align: right; font-size: 11px; opacity: .85; }
   .header-right strong { font-size: 13px; display: block; }
 
-  /* CONTROLES */
   .controles {
     background: white;
     border-bottom: 2px solid var(--borda);
@@ -92,14 +90,12 @@
   }
   .btn-sec:hover { background: var(--verde-claro); }
 
-  /* PAINEL PRINCIPAL */
   .layout {
     display: flex;
     gap: 0;
     min-height: calc(100vh - 130px);
   }
 
-  /* TABELA PRINCIPAL */
   .tabela-wrap {
     flex: 1;
     overflow-x: auto;
@@ -138,6 +134,7 @@
   }
   tbody tr:hover { background: var(--verde-claro); }
   tbody tr.sem-prioridade { opacity: .85; }
+  tbody tr.prio-duplicada td:first-child { background: #fff3cd; color: #b36b00; }
 
   td {
     padding: 8px 10px;
@@ -153,7 +150,6 @@
   .td-prov { min-width: 180px; }
   .td-acoes { min-width: 100px; text-align: center; }
 
-  /* RATIFICAÇÃO */
   .ratif-badge {
     display: inline-block;
     background: var(--verde-claro);
@@ -165,7 +161,6 @@
     padding: 2px 6px;
   }
 
-  /* STATUS BADGES */
   .status-badge {
     display: inline-block;
     border-radius: 3px;
@@ -181,7 +176,6 @@
   .status-verificar { background: #fce4ec; color: #880e4f; border: 1px solid #f48fb1; }
   .status-vazio { background: var(--cinza-claro); color: #888; border: 1px solid #ccc; font-style: italic; }
 
-  /* LEMBRETE */
   .lembrete {
     display: flex;
     align-items: center;
@@ -194,7 +188,6 @@
   .lembrete-urgente .lembrete-data { color: #c0392b; }
   .lembrete-hoje .lembrete-data { color: #e67e22; }
 
-  /* AÇÕES */
   .btn-edit {
     background: none;
     border: 1px solid #ccc;
@@ -210,7 +203,6 @@
   .btn-agenda { color: #1a73e8; border-color: #c5d9f7; }
   .btn-agenda:hover { background: #e8f0fe; border-color: #1a73e8; }
 
-  /* PAINEL LATERAL */
   .painel-lateral {
     width: 280px;
     min-width: 240px;
@@ -271,7 +263,6 @@
   .time-najs { background: #1a3e6b; }
   .time-consultoria { background: #6b1a3e; }
 
-  /* MODAL EDIÇÃO */
   .overlay {
     display: none;
     position: fixed;
@@ -341,7 +332,6 @@
     gap: 10px;
   }
 
-  /* NOTIFICAÇÃO TOAST */
   .toast {
     position: fixed;
     bottom: 24px;
@@ -359,7 +349,6 @@
   }
   @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
 
-  /* BANNER LEMBRETES */
   .banner-lembretes {
     background: var(--amarelo);
     border-left: 4px solid var(--amarelo-borda);
@@ -380,7 +369,6 @@
     color: #5a3e00;
   }
 
-  /* BOTÃO NOVA LINHA */
   .linha-nova {
     background: var(--verde-claro);
     text-align: center;
@@ -388,17 +376,6 @@
     border-top: 1px dashed var(--borda);
   }
 
-  .badge-novo {
-    background: var(--verde);
-    color: white;
-    font-size: 9px;
-    border-radius: 2px;
-    padding: 1px 5px;
-    margin-left: 4px;
-    vertical-align: middle;
-  }
-
-  /* PROTOCOLO */
   .protocolo-num {
     font-family: 'Courier New', monospace;
     font-size: 11px;
@@ -410,7 +387,6 @@
     .campos-grid { grid-template-columns: 1fr; }
   }
 
-  /* LINHA EM EDIÇÃO */
   tr.editando { background: #fffbea !important; outline: 2px solid var(--amarelo-borda); }
 </style>
 </head>
@@ -567,9 +543,6 @@
 <div class="toast" id="toast"></div>
 
 <script type="module">
-// ======================================================
-// FIREBASE – SINCRONIZAÇÃO EM TEMPO REAL
-// ======================================================
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getFirestore, collection, doc, onSnapshot, setDoc, deleteDoc, getDocs } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
@@ -587,7 +560,7 @@ const db = getFirestore(app);
 const colecao = collection(db, "pareceres");
 
 // ======================================================
-// DADOS
+// PROCURADORES CADASTRADOS
 // ======================================================
 const PROCURADORES_NAJS = [
   "Adriana","Ana","Antonio","Barbara","Bruno","Chris Dalvi","Chris Guimarães",
@@ -597,40 +570,40 @@ const PROCURADORES_NAJS = [
 ];
 const PROCURADORES_CONSULTORIA = ["Marilena","Mauro","Valéria","Vera"];
 
+const TODOS_PROCURADORES = [...PROCURADORES_NAJS, ...PROCURADORES_CONSULTORIA];
+
 const DADOS_INICIAIS = [
-  { id: uid(), prioridade: 1, referencial: "Lei 13.019/2016: Termo de fomento. Dispensa de chamamento, emendas parlamentares, Fundos. FAS SMDH SMDEI", najs: "Barbara, Felipe e Ana", consultoria: "", status: "Encaminhado para edição de portaria de designação", providencias: "", respLembrete: "", dataLembrete: "", protocolo: "" },
-  { id: uid(), prioridade: 1, referencial: "Lei 13.019/2016: Termo de fomento. Dispensa de chamamento, emendas parlamentares, SMDH", najs: "", consultoria: "", status: "", providencias: "", respLembrete: "", dataLembrete: "", protocolo: "" },
-  { id: uid(), prioridade: 2, referencial: "Locação. Inexigibilidade.", najs: "Raquel e Adriana", consultoria: "", status: "INICIAR", providencias: "", respLembrete: "", dataLembrete: "", protocolo: "" },
-  { id: uid(), prioridade: 3, referencial: "Prorrogação de ata de registro de preços.", najs: "Ricardo e Clarissa", consultoria: "", status: "INICIAR", providencias: "", respLembrete: "", dataLembrete: "", protocolo: "" },
-  { id: uid(), prioridade: 4, referencial: "Acréscimo quantitativo de vagas de CMEIs", najs: "Ricardo e Chris Dalvi", consultoria: "", status: "", providencias: "", respLembrete: "", dataLembrete: "", protocolo: "" },
-  { id: uid(), prioridade: 4, referencial: "Doação de bens", najs: "Natália e Cícero", consultoria: "", status: "", providencias: "", respLembrete: "", dataLembrete: "", protocolo: "" },
-  { id: uid(), prioridade: 5, referencial: "Certeza e liquidez de crédito não tributário: multas SMMA", najs: "Natália e Chris Guimarães", consultoria: "", status: "", providencias: "", respLembrete: "", dataLembrete: "", protocolo: "" },
-  { id: uid(), prioridade: 6, referencial: "Certeza e liquidez de crédito não tributário: multas (SMDT)", najs: "", consultoria: "", status: "VERIFICAR COM CRISTINE", providencias: "", respLembrete: "", dataLembrete: "", protocolo: "" },
-  { id: uid(), prioridade: 7, referencial: "Certeza e liquidez de crédito não tributário: multas COSEDI (SGM)", najs: "", consultoria: "", status: "VERIFICAR COM CHRIS DALVI", providencias: "", respLembrete: "", dataLembrete: "", protocolo: "" },
-  { id: uid(), prioridade: 8, referencial: "Celebração de contratos decorrentes do novo edital de credenciamento do IMAP", najs: "", consultoria: "", status: "", providencias: "", respLembrete: "", dataLembrete: "", protocolo: "" },
-  { id: uid(), prioridade: 9, referencial: "Adesão a ata de registro de preços - interna", najs: "Cristine e Adriana", consultoria: "", status: "", providencias: "", respLembrete: "", dataLembrete: "", protocolo: "" },
-  { id: uid(), prioridade: 10, referencial: "Adesão a ata de registro de preços – externa (Município aderente)", najs: "Cristine e Adriana", consultoria: "", status: "", providencias: "", respLembrete: "", dataLembrete: "", protocolo: "" },
-  { id: uid(), prioridade: 11, referencial: "Adesão a ata de registro de preços – externa (Município gerenciador)", najs: "Cristine e Adriana", consultoria: "", status: "", providencias: "", respLembrete: "", dataLembrete: "", protocolo: "" },
-  { id: uid(), prioridade: 12, referencial: "Apoio", najs: "Cícero e Maíra", consultoria: "", status: "", providencias: "", respLembrete: "", dataLembrete: "", protocolo: "" },
-  { id: uid(), prioridade: 13, referencial: "Supressão quantitativa de final de obra – término de vigência", najs: "Katiuscia e Luis Miguel", consultoria: "", status: "Aguardando retorno -NAJSMOP", providencias: "", respLembrete: "Ana", dataLembrete: "2026-06-17", protocolo: "" },
-  { id: uid(), prioridade: 14, referencial: "Lei 13.019/2016: Termo de fomento. Dispensa de chamamento – limitada à FAS", najs: "Barbara", consultoria: "Valéria", status: "Aguardando retorno -Barbara", providencias: "", respLembrete: "Ana", dataLembrete: "2026-06-17", protocolo: "" },
-  { id: uid(), prioridade: 15, referencial: "Revogação de decreto de permissão de uso de banca de feiras. SMSAN", najs: "Antonio e Vicente", consultoria: "", status: "Aguardando retorno -NAJSMSAN", providencias: "", respLembrete: "Ana", dataLembrete: "2026-06-17", protocolo: "" },
-  { id: uid(), prioridade: 16, referencial: "Alteração de titularidade em permissão de uso de banca de feira. SMSAN", najs: "Antonio e Vicente", consultoria: "", status: "Aguardando retorno -NAJSMSAN", providencias: "", respLembrete: "Ana", dataLembrete: "2026-06-17", protocolo: "" },
-  { id: uid(), prioridade: 0, referencial: "Prorrogação de contrato por demanda – verificar se delimita incidência", najs: "", consultoria: "", status: "Em análise (verificar art. 100 do decreto 700 / sistema SIM AM)", providencias: "Verificar com Chris Dalvi se o novo sistema SIM AM já resolve a desnecessidade de parecer.", respLembrete: "Mariana", dataLembrete: "2026-06-15", protocolo: "" },
-  { id: uid(), prioridade: 0, referencial: "Acréscimo/supressão quantitativo de obras", najs: "Katiuscia e Luis Miguel", consultoria: "", status: "Aguardando retorno -NAJSMOP", providencias: "", respLembrete: "Ana", dataLembrete: "2026-06-17", protocolo: "" },
-  { id: uid(), prioridade: 0, referencial: "Dispensa SMS cumprimento de decisão judicial", najs: "Bruno e Monika", consultoria: "", status: "Ver com Bruno se precisa", providencias: "", respLembrete: "Ana", dataLembrete: "2026-06-17", protocolo: "" },
-  { id: uid(), prioridade: 0, referencial: "Celebração de contratos decorrentes do novo edital de credenciamento do IMAP (Divanir)", najs: "Divanir", consultoria: "", status: "Médio prazo – edital em andamento", providencias: "", respLembrete: "", dataLembrete: "", protocolo: "" },
-  { id: uid(), prioridade: 0, referencial: "Prorrogação de prazo de vigência e de execução de obra", najs: "Katiuscia e Luis Miguel", consultoria: "", status: "Aguardando retorno -NAJSMOP", providencias: "", respLembrete: "Ana", dataLembrete: "2026-06-17", protocolo: "" },
+  { id: uid(), prioridade: 1,  referencial: "Lei 13.019/2016: Termo de fomento. Dispensa de chamamento, emendas parlamentares, Fundos. FAS SMDH SMDEI", najs: "Barbara, Felipe e Ana", consultoria: "", status: "Encaminhado para edição de portaria de designação", providencias: "", respLembrete: "", dataLembrete: "", protocolo: "" },
+  { id: uid(), prioridade: 2,  referencial: "Locação. Inexigibilidade.", najs: "Raquel e Adriana", consultoria: "", status: "INICIAR", providencias: "", respLembrete: "", dataLembrete: "", protocolo: "" },
+  { id: uid(), prioridade: 3,  referencial: "Prorrogação de ata de registro de preços.", najs: "Ricardo e Clarissa", consultoria: "", status: "INICIAR", providencias: "", respLembrete: "", dataLembrete: "", protocolo: "" },
+  { id: uid(), prioridade: 4,  referencial: "Acréscimo quantitativo de vagas de CMEIs", najs: "Ricardo e Chris Dalvi", consultoria: "", status: "", providencias: "", respLembrete: "", dataLembrete: "", protocolo: "" },
+  { id: uid(), prioridade: 5,  referencial: "Doação de bens", najs: "Natália e Cícero", consultoria: "", status: "", providencias: "", respLembrete: "", dataLembrete: "", protocolo: "" },
+  { id: uid(), prioridade: 6,  referencial: "Certeza e liquidez de crédito não tributário: multas SMMA", najs: "Natália e Chris Guimarães", consultoria: "", status: "", providencias: "", respLembrete: "", dataLembrete: "", protocolo: "" },
+  { id: uid(), prioridade: 7,  referencial: "Certeza e liquidez de crédito não tributário: multas (SMDT)", najs: "", consultoria: "", status: "VERIFICAR COM CRISTINE", providencias: "", respLembrete: "", dataLembrete: "", protocolo: "" },
+  { id: uid(), prioridade: 8,  referencial: "Certeza e liquidez de crédito não tributário: multas COSEDI (SGM)", najs: "", consultoria: "", status: "VERIFICAR COM CHRIS DALVI", providencias: "", respLembrete: "", dataLembrete: "", protocolo: "" },
+  { id: uid(), prioridade: 9,  referencial: "Celebração de contratos decorrentes do novo edital de credenciamento do IMAP", najs: "", consultoria: "", status: "", providencias: "", respLembrete: "", dataLembrete: "", protocolo: "" },
+  { id: uid(), prioridade: 10, referencial: "Adesão a ata de registro de preços - interna", najs: "Cristine e Adriana", consultoria: "", status: "", providencias: "", respLembrete: "", dataLembrete: "", protocolo: "" },
+  { id: uid(), prioridade: 11, referencial: "Adesão a ata de registro de preços – externa (Município aderente)", najs: "Cristine e Adriana", consultoria: "", status: "", providencias: "", respLembrete: "", dataLembrete: "", protocolo: "" },
+  { id: uid(), prioridade: 12, referencial: "Adesão a ata de registro de preços – externa (Município gerenciador)", najs: "Cristine e Adriana", consultoria: "", status: "", providencias: "", respLembrete: "", dataLembrete: "", protocolo: "" },
+  { id: uid(), prioridade: 13, referencial: "Apoio", najs: "Cícero e Maíra", consultoria: "", status: "", providencias: "", respLembrete: "", dataLembrete: "", protocolo: "" },
+  { id: uid(), prioridade: 14, referencial: "Supressão quantitativa de final de obra – término de vigência", najs: "Katiuscia e Luis Miguel", consultoria: "", status: "Aguardando retorno -NAJSMOP", providencias: "", respLembrete: "Ana", dataLembrete: "2026-06-17", protocolo: "" },
+  { id: uid(), prioridade: 15, referencial: "Lei 13.019/2016: Termo de fomento. Dispensa de chamamento – limitada à FAS", najs: "Barbara", consultoria: "Valéria", status: "Aguardando retorno -Barbara", providencias: "", respLembrete: "Ana", dataLembrete: "2026-06-17", protocolo: "" },
+  { id: uid(), prioridade: 16, referencial: "Revogação de decreto de permissão de uso de banca de feiras. SMSAN", najs: "Antonio e Vicente", consultoria: "", status: "Aguardando retorno -NAJSMSAN", providencias: "", respLembrete: "Ana", dataLembrete: "2026-06-17", protocolo: "" },
+  { id: uid(), prioridade: 17, referencial: "Alteração de titularidade em permissão de uso de banca de feira. SMSAN", najs: "Antonio e Vicente", consultoria: "", status: "Aguardando retorno -NAJSMSAN", providencias: "", respLembrete: "Ana", dataLembrete: "2026-06-17", protocolo: "" },
+  { id: uid(), prioridade: 0,  referencial: "Prorrogação de contrato por demanda – verificar se delimita incidência", najs: "", consultoria: "", status: "Em análise (verificar art. 100 do decreto 700 / sistema SIM AM)", providencias: "Verificar com Chris Dalvi se o novo sistema SIM AM já resolve a desnecessidade de parecer.", respLembrete: "Mariana", dataLembrete: "2026-06-15", protocolo: "" },
+  { id: uid(), prioridade: 0,  referencial: "Acréscimo/supressão quantitativo de obras", najs: "Katiuscia e Luis Miguel", consultoria: "", status: "Aguardando retorno -NAJSMOP", providencias: "", respLembrete: "Ana", dataLembrete: "2026-06-17", protocolo: "" },
+  { id: uid(), prioridade: 0,  referencial: "Dispensa SMS cumprimento de decisão judicial", najs: "Bruno e Monika", consultoria: "", status: "Ver com Bruno se precisa", providencias: "", respLembrete: "Ana", dataLembrete: "2026-06-17", protocolo: "" },
+  { id: uid(), prioridade: 0,  referencial: "Celebração de contratos decorrentes do novo edital de credenciamento do IMAP (Divanir)", najs: "Divanir", consultoria: "", status: "Médio prazo – edital em andamento", providencias: "", respLembrete: "", dataLembrete: "", protocolo: "" },
+  { id: uid(), prioridade: 0,  referencial: "Prorrogação de prazo de vigência e de execução de obra", najs: "Katiuscia e Luis Miguel", consultoria: "", status: "Aguardando retorno -NAJSMOP", providencias: "", respLembrete: "Ana", dataLembrete: "2026-06-17", protocolo: "" },
 ];
 
 let dados = [];
 let ordenacaoAtual = { campo: 'prioridade', asc: true };
-let carregando = true;
 
 function uid() { return Math.random().toString(36).slice(2,10); }
 
 // ======================================================
-// FIREBASE: SALVAR
+// FIREBASE
 // ======================================================
 async function salvar(obj) {
   try {
@@ -650,15 +623,11 @@ async function removerFirebase(id) {
   }
 }
 
-// ======================================================
-// FIREBASE: ESCUTA EM TEMPO REAL
-// ======================================================
 function iniciarEscuta() {
   mostrarCarregando(true);
   onSnapshot(colecao, (snapshot) => {
     dados = [];
     snapshot.forEach(d => dados.push(d.data()));
-    carregando = false;
     mostrarCarregando(false);
     render();
   }, (err) => {
@@ -677,9 +646,6 @@ function mostrarCarregando(sim) {
   }
 }
 
-// ======================================================
-// CARGA INICIAL: só popula se banco estiver vazio
-// ======================================================
 async function popularSeVazio() {
   const snap = await getDocs(colecao);
   if (snap.empty) {
@@ -692,6 +658,32 @@ async function popularSeVazio() {
 }
 
 // ======================================================
+// EXTRAI NOMES DE PROCURADORES DE UM CAMPO DE TEXTO
+// Divide por vírgula, " e ", "&" e variantes
+// ======================================================
+function extrairNomes(campo) {
+  if (!campo) return [];
+  // Divide por vírgula ou " e " (com espaços) ou &
+  return campo
+    .split(/,|\se\s|&/)
+    .map(s => s.trim())
+    .filter(Boolean);
+}
+
+// Resolve o nome digitado para o nome canônico no cadastro
+function resolverNome(nome) {
+  if (!nome) return null;
+  const nLower = nome.toLowerCase();
+  // Busca por inclusão em qualquer direção
+  const match = TODOS_PROCURADORES.find(p =>
+    p.toLowerCase() === nLower ||
+    nLower.includes(p.toLowerCase()) ||
+    p.toLowerCase().includes(nLower)
+  );
+  return match || nome; // retorna o digitado se não encontrar
+}
+
+// ======================================================
 // RENDER
 // ======================================================
 function render(lista) {
@@ -701,23 +693,32 @@ function render(lista) {
 
   if (!lista.length) {
     corpo.innerHTML = `<tr><td colspan="9" style="text-align:center;padding:20px;color:#888;">Nenhum parecer encontrado.</td></tr>`;
-    atualizarPainel();
+    atualizarPainel(lista);
     verificarLembretes();
     return;
   }
 
+  // Detecta prioridades duplicadas (apenas para prioridade > 0)
+  const contPrio = {};
+  lista.forEach(r => {
+    if (r.prioridade > 0) contPrio[r.prioridade] = (contPrio[r.prioridade] || 0) + 1;
+  });
+
   lista.forEach((row) => {
-    const idx = dados.indexOf(row);
     const tr = document.createElement('tr');
     if (!row.prioridade) tr.classList.add('sem-prioridade');
 
     const prio = row.prioridade ? String(row.prioridade).padStart(2,'0') : '—';
+    const isDuplicada = row.prioridade > 0 && contPrio[row.prioridade] > 1;
+    if (isDuplicada) tr.classList.add('prio-duplicada');
+
     const statusHtml = renderStatus(row.status);
     const lembreteHtml = renderLembrete(row);
     const ratif = row.najs || row.consultoria ? `<span class="ratif-badge">Mariana</span>` : '';
+    const duploAviso = isDuplicada ? ` <span title="Prioridade duplicada" style="font-size:10px;color:#b36b00;">⚠️</span>` : '';
 
     tr.innerHTML = `
-      <td>${prio}</td>
+      <td>${prio}${duploAviso}</td>
       <td class="td-referencial">${esc(row.referencial)}</td>
       <td class="td-najs">${esc(row.najs)}</td>
       <td class="td-consultoria">${esc(row.consultoria)}</td>
@@ -734,7 +735,8 @@ function render(lista) {
     corpo.appendChild(tr);
   });
 
-  atualizarPainel();
+  // Painel usa TODOS os dados (não só os filtrados), para refletir carga real
+  atualizarPainel(dados);
   verificarLembretes();
 }
 
@@ -772,21 +774,21 @@ function renderLembrete(row) {
 }
 
 // ======================================================
-// PAINEL PROCURADORES
+// PAINEL PROCURADORES — CORRIGIDO
+// Recebe o array a ser contabilizado (sempre `dados` completo)
+// Usa extrairNomes + resolverNome para contagem correta
 // ======================================================
-function atualizarPainel() {
+function atualizarPainel(base) {
   const painel = document.getElementById('painel-procuradores');
   const contagem = {};
-  dados.forEach(row => {
+
+  (base || dados).forEach(row => {
+    // Processa campos NAJS e Consultoria
     [row.najs, row.consultoria].forEach(campo => {
-      if (!campo) return;
-      campo.split(/[,e&]/).forEach(n => {
-        const nome = n.trim();
-        if (!nome) return;
-        const match = [...PROCURADORES_NAJS, ...PROCURADORES_CONSULTORIA].find(p =>
-          nome.toLowerCase().includes(p.toLowerCase()) || p.toLowerCase().includes(nome.toLowerCase())
-        );
-        const chave = match || nome;
+      const nomes = extrairNomes(campo);
+      nomes.forEach(n => {
+        const chave = resolverNome(n);
+        if (!chave) return;
         contagem[chave] = (contagem[chave] || 0) + 1;
       });
     });
@@ -818,12 +820,31 @@ function dadosFiltrados() {
   const busca = document.getElementById('busca').value.toLowerCase();
   const time = document.getElementById('filtro-time').value;
   const status = document.getElementById('filtro-status').value.toLowerCase();
-  return dados.filter(row => {
+
+  let lista = [...dados];
+
+  // Ordenação padrão por prioridade
+  lista.sort((a, b) => {
+    let va = a[ordenacaoAtual.campo] ?? '';
+    let vb = b[ordenacaoAtual.campo] ?? '';
+    if (ordenacaoAtual.campo === 'prioridade') {
+      va = Number(va) || 999;
+      vb = Number(vb) || 999;
+    } else {
+      va = String(va).toLowerCase();
+      vb = String(vb).toLowerCase();
+    }
+    if (va < vb) return ordenacaoAtual.asc ? -1 : 1;
+    if (va > vb) return ordenacaoAtual.asc ? 1 : -1;
+    return 0;
+  });
+
+  return lista.filter(row => {
     const texto = [row.referencial, row.najs, row.consultoria, row.status, row.providencias].join(' ').toLowerCase();
     if (busca && !texto.includes(busca)) return false;
     if (time === 'najs' && !row.najs) return false;
     if (time === 'consultoria' && !row.consultoria) return false;
-    if (status && !row.status.toLowerCase().includes(status)) return false;
+    if (status && !String(row.status || '').toLowerCase().includes(status)) return false;
     return true;
   });
 }
@@ -840,14 +861,6 @@ window.filtrarProcurador = function(nome) {
 window.ordenar = function(campo) {
   if (ordenacaoAtual.campo === campo) ordenacaoAtual.asc = !ordenacaoAtual.asc;
   else { ordenacaoAtual.campo = campo; ordenacaoAtual.asc = true; }
-  dados.sort((a, b) => {
-    let va = a[campo] ?? '', vb = b[campo] ?? '';
-    if (campo === 'prioridade') { va = Number(va)||999; vb = Number(vb)||999; }
-    else { va = String(va).toLowerCase(); vb = String(vb).toLowerCase(); }
-    if (va < vb) return ordenacaoAtual.asc ? -1 : 1;
-    if (va > vb) return ordenacaoAtual.asc ? 1 : -1;
-    return 0;
-  });
   render();
 };
 
@@ -892,9 +905,17 @@ function limparModal() {
 
 window.salvarModal = async function() {
   const id = document.getElementById('modal-idx').value;
+  const novaPrio = Number(document.getElementById('m-prioridade').value) || 0;
+
+  // Avisa sobre prioridade duplicada (não bloqueia, apenas alerta)
+  if (novaPrio > 0) {
+    const duplicada = dados.find(d => d.id !== id && d.prioridade === novaPrio);
+    if (duplicada && !confirm(`Já existe um parecer com prioridade ${novaPrio}: "${duplicada.referencial}".\n\nDeseja salvar mesmo assim?`)) return;
+  }
+
   const obj = {
     id: id || uid(),
-    prioridade: Number(document.getElementById('m-prioridade').value) || 0,
+    prioridade: novaPrio,
     referencial: document.getElementById('m-referencial').value.trim(),
     najs: document.getElementById('m-najs').value.trim(),
     consultoria: document.getElementById('m-consultoria').value.trim(),
@@ -935,7 +956,7 @@ function verificarLembretes() {
 }
 
 // ======================================================
-// EXPORTAR (mantido como backup)
+// EXPORTAR / IMPORTAR
 // ======================================================
 window.exportarJSON = function() {
   const blob = new Blob([JSON.stringify(dados, null, 2)], {type:'application/json'});
@@ -984,10 +1005,7 @@ function toast(msg) {
 window.abrirAgenda = function(id) {
   const row = dados.find(d => d.id === id);
   if (!row || !row.dataLembrete) return;
-
-  // Formata a data no padrão do Google Agenda: YYYYMMDD
   const dataStr = row.dataLembrete.replace(/-/g, '');
-
   const titulo = encodeURIComponent(`🔔 [PGM] ${row.respLembrete ? row.respLembrete + ': ' : ''}${row.referencial.substring(0, 60)}`);
   const descricao = encodeURIComponent(
     `Parecer Referencial: ${row.referencial}\n` +
@@ -996,7 +1014,6 @@ window.abrirAgenda = function(id) {
     (row.providencias ? `Providências: ${row.providencias}\n` : '') +
     `\nAcesse a tabela: https://mariana1608.github.io/Referenciais-2026/`
   );
-
   const url = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${titulo}&dates=${dataStr}/${dataStr}&details=${descricao}`;
   window.open(url, '_blank');
   toast('📅 Abrindo Google Agenda...');
