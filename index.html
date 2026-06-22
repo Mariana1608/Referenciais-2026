@@ -141,7 +141,7 @@
   .time-najs { background: #1a3e6b; }
   .time-consultoria { background: #6b1a3e; }
 
-  /* MODAL */
+  /* MODAL GERAL */
   .overlay {
     display: none; position: fixed; inset: 0;
     background: rgba(0,0,0,.45); z-index: 100; align-items: center; justify-content: center;
@@ -176,11 +176,10 @@
     display: flex; justify-content: flex-end; gap: 10px;
   }
 
-  /* SELETOR MÚLTIPLO DE PROCURADORES */
+  /* SELETOR MÚLTIPLO */
   .multi-select-wrap {
     border: 1px solid var(--borda); border-radius: 4px;
-    background: white; max-height: 160px; overflow-y: auto;
-    padding: 4px;
+    background: white; max-height: 160px; overflow-y: auto; padding: 4px;
   }
   .multi-select-wrap:focus-within { border-color: var(--verde); }
   .multi-opt {
@@ -192,7 +191,7 @@
   .multi-opt input[type=checkbox] { accent-color: var(--verde); width: 13px; height: 13px; cursor: pointer; }
   .multi-opt.selecionado { background: var(--verde-claro); font-weight: 600; }
 
-  /* TAGS DOS SELECIONADOS */
+  /* TAGS */
   .tags-wrap {
     display: flex; flex-wrap: wrap; gap: 4px; margin-top: 5px; min-height: 22px;
   }
@@ -204,6 +203,58 @@
   .tag-x { cursor: pointer; opacity: .7; font-size: 13px; line-height: 1; }
   .tag-x:hover { opacity: 1; }
 
+  /* MODAL MEMBROS */
+  .modal-membros {
+    background: white; border-radius: 8px; width: 680px;
+    max-width: 96vw; max-height: 90vh; overflow-y: auto;
+    box-shadow: 0 8px 32px rgba(0,0,0,.22);
+  }
+  .membros-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 24px; padding: 20px;
+  }
+  .membros-coluna h3 {
+    font-size: 11px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: .8px; padding: 6px 10px; border-radius: 4px;
+    margin-bottom: 10px; color: white;
+  }
+  .membros-coluna.najs h3 { background: #1a3e6b; }
+  .membros-coluna.consultoria h3 { background: #6b1a3e; }
+  .membro-item {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 5px 8px; border-radius: 4px; margin-bottom: 3px;
+    border: 1px solid var(--borda); background: white;
+    font-size: 12px; gap: 6px;
+  }
+  .membro-item:hover { background: var(--verde-claro); }
+  .membro-nome { flex: 1; font-weight: 500; }
+  .btn-remover-membro {
+    background: none; border: 1px solid #f9c6c6; border-radius: 3px;
+    color: #c0392b; cursor: pointer; font-size: 11px; padding: 2px 6px;
+    line-height: 1.4; white-space: nowrap;
+  }
+  .btn-remover-membro:hover { background: #fdecea; border-color: #c0392b; }
+  .add-membro-row {
+    display: flex; gap: 6px; margin-top: 8px;
+  }
+  .add-membro-row input {
+    flex: 1; border: 1px solid var(--borda); border-radius: 4px;
+    padding: 6px 10px; font-size: 12px; font-family: var(--fonte); outline: none;
+  }
+  .add-membro-row input:focus { border-color: var(--verde); }
+  .btn-add-membro {
+    background: var(--verde); color: white; border: none; border-radius: 4px;
+    padding: 6px 12px; font-size: 12px; cursor: pointer; font-weight: 600;
+    white-space: nowrap;
+  }
+  .btn-add-membro:hover { background: var(--verde-medio); }
+  .membros-aviso {
+    font-size: 11px; color: var(--cinza-medio); background: var(--verde-claro);
+    border: 1px solid var(--borda); border-radius: 4px; padding: 8px 12px;
+    margin: 0 20px 0; display: flex; gap: 6px; align-items: flex-start;
+  }
+  .membros-aviso-icon { font-size: 14px; flex-shrink: 0; margin-top: 1px; }
+
+  /* TOAST */
   .toast {
     position: fixed; bottom: 24px; right: 24px;
     background: var(--verde); color: white; padding: 12px 20px;
@@ -229,6 +280,7 @@
   @media (max-width: 900px) {
     .painel-lateral { display: none; }
     .campos-grid { grid-template-columns: 1fr; }
+    .membros-grid { grid-template-columns: 1fr; }
   }
   tr.editando { background: #fffbea !important; outline: 2px solid var(--amarelo-borda); }
 </style>
@@ -268,6 +320,7 @@
     <option value="verificar">Verificar</option>
   </select>
   <button class="btn" onclick="abrirModalNovo()">＋ Novo Parecer</button>
+  <button class="btn-sec" onclick="abrirModalMembros()">⚙️ Membros</button>
   <button class="btn-sec" onclick="exportarJSON()">⬇ Exportar</button>
   <button class="btn-sec" onclick="importarJSON()">⬆ Importar</button>
   <button class="btn-sec" style="color:#c0392b;border-color:#c0392b;" onclick="resetarDados()">🔄 Resetar Dados</button>
@@ -307,7 +360,7 @@
   </div>
 </div>
 
-<!-- MODAL -->
+<!-- MODAL PARECER -->
 <div class="overlay" id="overlay">
   <div class="modal">
     <div class="modal-header">
@@ -393,11 +446,46 @@
   </div>
 </div>
 
+<!-- MODAL GERENCIAR MEMBROS -->
+<div class="overlay" id="overlay-membros">
+  <div class="modal-membros">
+    <div class="modal-header">
+      <span>⚙️ Gerenciar Membros das Equipes</span>
+      <button onclick="fecharModalMembros()">✕</button>
+    </div>
+    <div class="membros-aviso" style="margin-top:16px;">
+      <span class="membros-aviso-icon">ℹ️</span>
+      <span>As alterações são salvas na nuvem e refletem imediatamente para todas as usuárias. Procuradores já atribuídos a pareceres não são removidos dos registros existentes.</span>
+    </div>
+    <div class="membros-grid">
+      <div class="membros-coluna najs">
+        <h3>⚖️ Procuradores NAJS</h3>
+        <div id="lista-membros-najs"></div>
+        <div class="add-membro-row">
+          <input type="text" id="input-novo-najs" placeholder="Nome do procurador..." onkeydown="if(event.key==='Enter')adicionarMembro('najs')">
+          <button class="btn-add-membro" onclick="adicionarMembro('najs')">＋ Adicionar</button>
+        </div>
+      </div>
+      <div class="membros-coluna consultoria">
+        <h3>🏛️ Procuradores Consultoria</h3>
+        <div id="lista-membros-consultoria"></div>
+        <div class="add-membro-row">
+          <input type="text" id="input-novo-consultoria" placeholder="Nome do procurador..." onkeydown="if(event.key==='Enter')adicionarMembro('consultoria')">
+          <button class="btn-add-membro" onclick="adicionarMembro('consultoria')">＋ Adicionar</button>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-sec" onclick="fecharModalMembros()">Fechar</button>
+    </div>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getFirestore, collection, doc, onSnapshot, setDoc, deleteDoc, getDocs }
+import { getFirestore, collection, doc, onSnapshot, setDoc, deleteDoc, getDocs, getDoc }
   from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 const firebaseConfig = {
@@ -412,17 +500,22 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db  = getFirestore(app);
 const col = collection(db, "pareceres");
+const docMembros = doc(db, "config", "membros");
 
-// ── LISTAS CANÔNICAS ──────────────────────────────────
-const NAJS = [
+// ── LISTAS PADRÃO (fallback se Firestore não tiver ainda) ─────────────────
+const NAJS_PADRAO = [
   "Adriana","Ana","Antonio","Barbara","Bruno","Chris Dalvi","Chris Guimarães",
   "Cícero","Clarissa","Cristine","Diego","Divanir","Felipe","Heliomar",
   "Katiuscia","Luis Miguel","Mariana","Monika","Natália","Paulo de Tarso",
   "Raquel","Ricardo","Richard","Thayse","Vicente","Vivi"
 ];
-const CONSULTORIA = ["Marilena","Mauro","Valéria","Vera"];
+const CONSULTORIA_PADRAO = ["Marilena","Mauro","Valéria","Vera"];
 
-// ── DADOS INICIAIS (prioridades únicas, nomes como arrays) ──
+// Listas ativas (carregadas do Firestore)
+let NAJS = [...NAJS_PADRAO];
+let CONSULTORIA = [...CONSULTORIA_PADRAO];
+
+// ── DADOS INICIAIS ────────────────────────────────────
 function uid() { return Math.random().toString(36).slice(2,10); }
 
 const DADOS_INICIAIS = [
@@ -453,7 +546,28 @@ const DADOS_INICIAIS = [
 let dados = [];
 let ordenacaoAtual = { campo: 'prioridade', asc: true };
 
-// ── FIREBASE ──────────────────────────────────────────
+// ── FIREBASE — MEMBROS ────────────────────────────────
+async function carregarMembros() {
+  try {
+    const snap = await getDoc(docMembros);
+    if (snap.exists()) {
+      const d = snap.data();
+      if (Array.isArray(d.najs) && d.najs.length)        NAJS = d.najs.slice().sort((a,b)=>a.localeCompare(b,'pt'));
+      if (Array.isArray(d.consultoria) && d.consultoria.length) CONSULTORIA = d.consultoria.slice().sort((a,b)=>a.localeCompare(b,'pt'));
+    } else {
+      // Primeira vez: salva os padrões no Firestore
+      await setDoc(docMembros, { najs: NAJS_PADRAO, consultoria: CONSULTORIA_PADRAO });
+    }
+  } catch(e) { console.warn('Aviso: usando listas padrão de membros.', e); }
+}
+
+async function salvarMembros() {
+  try {
+    await setDoc(docMembros, { najs: NAJS, consultoria: CONSULTORIA });
+  } catch(e) { toast('⚠️ Erro ao salvar membros.'); console.error(e); }
+}
+
+// ── FIREBASE — PARECERES ──────────────────────────────
 async function salvar(obj) {
   try { await setDoc(doc(db,"pareceres",obj.id), obj); }
   catch(e) { toast('⚠️ Erro ao salvar.'); console.error(e); }
@@ -468,7 +582,6 @@ function iniciarEscuta() {
     dados = [];
     snap.forEach(d => {
       const r = d.data();
-      // Migração: converte campos string legados para array
       if (!Array.isArray(r.najs))        r.najs        = r.najs        ? r.najs.split(/,|\se\s|&/).map(s=>s.trim()).filter(Boolean) : [];
       if (!Array.isArray(r.consultoria)) r.consultoria = r.consultoria ? r.consultoria.split(/,|\se\s|&/).map(s=>s.trim()).filter(Boolean) : [];
       dados.push(r);
@@ -501,6 +614,76 @@ window.resetarDados = async () => {
   } catch(e) {
     toast('⚠️ Erro ao resetar dados.'); console.error(e);
   }
+};
+
+// ── MODAL MEMBROS ─────────────────────────────────────
+window.abrirModalMembros = () => {
+  renderListaMembros();
+  document.getElementById('overlay-membros').classList.add('ativo');
+};
+window.fecharModalMembros = () => {
+  document.getElementById('overlay-membros').classList.remove('ativo');
+};
+
+function renderListaMembros() {
+  renderColunaMembros('lista-membros-najs', NAJS, 'najs');
+  renderColunaMembros('lista-membros-consultoria', CONSULTORIA, 'consultoria');
+}
+
+function renderColunaMembros(containerId, lista, tipo) {
+  const div = document.getElementById(containerId);
+  if (!lista.length) {
+    div.innerHTML = `<p style="font-size:11px;color:#aaa;padding:6px 8px;">Nenhum membro cadastrado.</p>`;
+    return;
+  }
+  div.innerHTML = lista.map(nome => `
+    <div class="membro-item">
+      <span class="membro-nome">${esc(nome)}</span>
+      <button class="btn-remover-membro" onclick="removerMembro('${tipo}','${esc(nome)}')">✕ Remover</button>
+    </div>
+  `).join('');
+}
+
+window.adicionarMembro = async (tipo) => {
+  const inputId = tipo === 'najs' ? 'input-novo-najs' : 'input-novo-consultoria';
+  const input = document.getElementById(inputId);
+  const nome = input.value.trim();
+  if (!nome) { input.focus(); return; }
+
+  const lista = tipo === 'najs' ? NAJS : CONSULTORIA;
+  const nomeLower = nome.toLowerCase();
+  if (lista.some(n => n.toLowerCase() === nomeLower)) {
+    toast(`⚠️ "${nome}" já está na lista.`); input.select(); return;
+  }
+
+  lista.push(nome);
+  lista.sort((a,b) => a.localeCompare(b, 'pt'));
+  await salvarMembros();
+  input.value = '';
+  input.focus();
+  renderListaMembros();
+  toast(`✅ "${nome}" adicionado(a) com sucesso!`);
+};
+
+window.removerMembro = async (tipo, nome) => {
+  const lista = tipo === 'najs' ? NAJS : CONSULTORIA;
+  const idx = lista.indexOf(nome);
+  if (idx === -1) return;
+
+  // Verifica se está em uso em algum parecer
+  const emUso = dados.some(row => {
+    const arr = tipo === 'najs' ? row.najs : row.consultoria;
+    return Array.isArray(arr) && arr.includes(nome);
+  });
+  const aviso = emUso ? `\n\n⚠️ ATENÇÃO: "${nome}" está atribuído(a) a um ou mais pareceres.\nO nome será removido da lista, mas permanecerá nos pareceres existentes.` : '';
+
+  if (!confirm(`Remover "${nome}" da lista?${aviso}`)) return;
+
+  lista.splice(idx, 1);
+  await salvarMembros();
+  renderListaMembros();
+  render(); // Atualiza painel lateral
+  toast(`🗑 "${nome}" removido(a) da lista.`);
 };
 
 // ── RENDER TABELA ─────────────────────────────────────
@@ -573,7 +756,7 @@ function renderLembrete(row) {
   </div>`;
 }
 
-// ── PAINEL LATERAL — contagem por array ───────────────
+// ── PAINEL LATERAL ────────────────────────────────────
 function atualizarPainel() {
   const painel = document.getElementById('painel-procuradores');
   const cnt = {};
@@ -581,19 +764,32 @@ function atualizarPainel() {
     (Array.isArray(row.najs) ? row.najs : []).forEach(n => { if(n) cnt[n]=(cnt[n]||0)+1; });
     (Array.isArray(row.consultoria) ? row.consultoria : []).forEach(n => { if(n) cnt[n]=(cnt[n]||0)+1; });
   });
+
+  // Inclui no painel também quem está em pareceres mas não está mais na lista
+  const todosNajs = new Set([...NAJS]);
+  const todosConsultoria = new Set([...CONSULTORIA]);
+  Object.keys(cnt).forEach(nome => {
+    const emNajs = dados.some(r => Array.isArray(r.najs) && r.najs.includes(nome));
+    const emConsult = dados.some(r => Array.isArray(r.consultoria) && r.consultoria.includes(nome));
+    if (emNajs) todosNajs.add(nome);
+    if (emConsult) todosConsultoria.add(nome);
+  });
+
   let html = `<div class="time-label time-najs">⚖️ NAJS</div>`;
-  NAJS.forEach(p => {
+  [...todosNajs].sort((a,b)=>a.localeCompare(b,'pt')).forEach(p => {
     const n = cnt[p]||0;
+    const extra = !NAJS.includes(p) ? ' <span title="Não está na lista atual" style="font-size:9px;color:#aaa;">(removido)</span>' : '';
     html += `<div class="proc-item" onclick="filtrarProcurador('${p}')">
-      <span class="proc-nome">${p}</span>
+      <span class="proc-nome">${p}${extra}</span>
       <span class="proc-count ${n===0?'zero':''}">${n}</span>
     </div>`;
   });
-  html += `<div class="time-label time-consultoria">🏛️ Consultoria</div>`;
-  CONSULTORIA.forEach(p => {
+  html += `<div class="time-label time-consultoria" style="margin-top:14px;">🏛️ Consultoria</div>`;
+  [...todosConsultoria].sort((a,b)=>a.localeCompare(b,'pt')).forEach(p => {
     const n = cnt[p]||0;
+    const extra = !CONSULTORIA.includes(p) ? ' <span title="Não está na lista atual" style="font-size:9px;color:#aaa;">(removido)</span>' : '';
     html += `<div class="proc-item" onclick="filtrarProcurador('${p}')">
-      <span class="proc-nome">${p}</span>
+      <span class="proc-nome">${p}${extra}</span>
       <span class="proc-count ${n===0?'zero':''}">${n}</span>
     </div>`;
   });
@@ -637,11 +833,15 @@ function buildMultiSelect(containerId, tagsId, lista, selecionados, cssClass) {
   wrap.innerHTML = '';
   renderTags(tagsWrap, selecionados, cssClass, containerId, tagsId, lista);
 
-  lista.forEach(nome => {
+  // Combina lista atual + nomes já selecionados que podem ter sido removidos
+  const listaCombinada = [...new Set([...lista, ...selecionados])].sort((a,b)=>a.localeCompare(b,'pt'));
+
+  listaCombinada.forEach(nome => {
+    const removido = !lista.includes(nome) && selecionados.includes(nome);
     const div = document.createElement('div');
     div.className = 'multi-opt' + (selecionados.includes(nome)?' selecionado':'');
     div.innerHTML = `<input type="checkbox" ${selecionados.includes(nome)?'checked':''} id="chk-${containerId}-${nome}">
-                     <label for="chk-${containerId}-${nome}" style="cursor:pointer;flex:1">${nome}</label>`;
+                     <label for="chk-${containerId}-${nome}" style="cursor:pointer;flex:1">${nome}${removido?' <span style="font-size:10px;color:#aaa;">(removido da lista)</span>':''}</label>`;
     div.querySelector('input').addEventListener('change', e => {
       if (e.target.checked) { if (!selecionados.includes(nome)) selecionados.push(nome); }
       else { const i=selecionados.indexOf(nome); if(i>-1) selecionados.splice(i,1); }
@@ -667,11 +867,10 @@ function renderTags(tagsWrap, selecionados, cssClass, containerId, tagsId, lista
   });
 }
 
-// Arrays temporários para o modal
 let selNajs = [];
 let selConsultoria = [];
 
-// ── MODAL ─────────────────────────────────────────────
+// ── MODAL PARECER ─────────────────────────────────────
 window.abrirModalNovo = () => {
   document.getElementById('modal-titulo').textContent = '＋ Novo Parecer Referencial';
   document.getElementById('modal-idx').value = '';
@@ -812,8 +1011,10 @@ document.getElementById('data-atual').textContent = new Date().toLocaleDateStrin
   weekday:'long',day:'2-digit',month:'long',year:'numeric'
 });
 document.getElementById('overlay').addEventListener('click', e=>{ if(e.target===document.getElementById('overlay')) fecharModal(); });
+document.getElementById('overlay-membros').addEventListener('click', e=>{ if(e.target===document.getElementById('overlay-membros')) fecharModalMembros(); });
 
-popularSeVazio();
+// Carrega membros primeiro, depois pareceres
+carregarMembros().then(() => popularSeVazio());
 </script>
 </body>
 </html>
